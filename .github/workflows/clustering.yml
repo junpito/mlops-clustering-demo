@@ -1,0 +1,77 @@
+name: User data - clustering experiments
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/users.csv"
+      - "data/baseline_users.csv"
+      - "data/validation_users.csv"
+      - "data/test_users.csv"
+      - "*.py"
+      - "tests/**"
+      - "requirements.txt"
+      - ".github/workflows/clustering.yml"
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clustering-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      LOKY_MAX_CPU_COUNT: "2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install demo dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Test data contracts, MLflow logging and model reload
+        run: python -m unittest discover -s tests -v
+      - name: Train and evaluate candidate models
+        if: github.event_name != 'pull_request'
+        run: python train.py --output results/current
+      - name: Record installed environment
+        if: always() && github.event_name != 'pull_request'
+        run: |
+          mkdir -p results
+          python -m pip freeze > results/environment.txt
+      - name: Publish experiment summary
+        if: always() && github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          if [ -f results/current/summary.md ]; then
+            cat results/current/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Pipeline did not finish; inspect the failing step. No candidate approved." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Preserve results even when the quality gate rejects the candidate
+        if: always() && github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: clustering-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 14
+          path: |
+            mlruns/
+            results/
+            data/*.csv
+            data/manifest.json
+            requirements.txt
+            view_runs.py
+            predict.py
+            pipeline.py
+          if-no-files-found: error

@@ -1,0 +1,27 @@
+{
+  "source_url": "https://docs.google.com/spreadsheets/d/e/2PACX-1vTbg5WVW6W3c8SPNUGc3A3AL-AG32TPEQGpdzARfNICMsLFI0LQj0jporhsLCeVhkN5AoRsTkn08AYl/pub?output=csv",
+  "source_sha256": "7654417780583ae137cb06bc97ad76f216f3ad1cc3daebe9bd6256629d576d43",
+  "cleaning": {
+    "source_rows": 2537,
+    "duplicate_rows_removed": 22,
+    "missing_rows_removed": 146,
+    "accepted_transactions": 2369
+  },
+  "unit": "one account (AccountID), treated as user for this demo",
+  "split": "SHA256(AccountID), sorted; 60% baseline, 20% incoming, 10% validation, 10% test",
+  "user_counts": {
+    "baseline_users.csv": 296,
+    "users.csv": 296,
+    "incoming_users.csv": 99,
+    "validation_users.csv": 49,
+    "test_users.csv": 50
+  },
+  "snapshot_sha256": {
+    "baseline_users.csv": "177309bfdb0b77e06ff855add9fe9bfaac1d6dfc6e7fe4aaedb46dd6c1fbf0a8",
+    "users.csv": "177309bfdb0b77e06ff855add9fe9bfaac1d6dfc6e7fe4aaedb46dd6c1fbf0a8",
+    "incoming_users.csv": "4b0222d3526c31cf780eaa12032deda00e47839512e95e5596431566c935c8e2",
+    "validation_users.csv": "9804cf384de4a312aae107495f6516104426c333c0d556da450581a71b931b3d",
+    "test_users.csv": "0633076e2c279268b38ac17052ba7999960a4cb3c0fe7e9116ee1d5a3fee6ec8"
+  },
+  "note": "Numeric behavior features only; no IP/device identifiers, demographics, or cluster targets."
+}

@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+mlruns/
+results/
+.pytest_cache/
+*.zip
+data/source-transactions.csv
